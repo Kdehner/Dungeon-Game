@@ -60,7 +60,7 @@ def get_moves(player):
 
     return moves
 
-def draw_map(location, moves):
+def draw_map(debug, monster, door, location, moves):
     print(' _'*5)
     tile = '|{}'
 
@@ -70,6 +70,10 @@ def draw_map(location, moves):
             line_end=''
             if cell == location:
                 output = tile.format('X')
+            elif cell == monster and debug == True:
+                output = tile.format('M')
+            elif cell == door and debug == True:
+                output = tile.format('D')
             elif cell in moves:
                 output = tile.format('.')
             else:
@@ -78,10 +82,15 @@ def draw_map(location, moves):
             line_end = '\n'
             if cell == location:
                 output = tile.format('X|')
+            elif cell == monster and debug == True:
+                output = tile.format('M')
+            elif cell == door and debug == True:
+                output = tile.format('D')
             elif cell in moves:
                 output = tile.format('.|')
             else:
                 output = tile.format('_|')
+
         print(output, end=line_end)
 
 def game_loop(debug):
@@ -92,7 +101,7 @@ def game_loop(debug):
 
     while playing:
         clear_screen()
-        draw_map(**player)
+        draw_map(debug, monster, door, **player)
         valid_moves = get_moves(player)
 
         if debug == True:
