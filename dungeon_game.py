@@ -26,7 +26,7 @@ def get_locations():
 
 def move_player(player, move):
     # get the player's location
-    x, y = player
+    x, y = player['location']
     # if move == LEFT, x-1
     if move == 'LEFT':
         x -= 1
@@ -44,7 +44,7 @@ def move_player(player, move):
 
 def get_moves(player):
     moves = ['LEFT', 'RIGHT', 'UP', 'DOWN']
-    x, y = player
+    x, y = player['location']
     # if player's y == 0, they can't move UP
     if y == 0:
         moves.remove('UP')
@@ -60,7 +60,7 @@ def get_moves(player):
 
     return moves
 
-def draw_map(player):
+def draw_map(location, moves):
     print(' _'*5)
     tile = '|{}'
 
@@ -68,29 +68,35 @@ def draw_map(player):
         x, y = cell
         if x < 4:
             line_end=''
-            if cell == player:
+            if cell == location:
                 output = tile.format('X')
+            elif cell in moves:
+                output = tile.format('.')
             else:
                 output = tile.format('_')
         else:
             line_end = '\n'
-            if cell == player:
+            if cell == location:
                 output = tile.format('X|')
+            elif cell in moves:
+                output = tile.format('.|')
             else:
                 output = tile.format('_|')
         print(output, end=line_end)
 
 def game_loop():
-    monster, door, player = get_locations()
+    player = {'location': None, 'moves': []}
+    monster, door, player['location'] = get_locations()
     playing = True
 
     while playing:
         clear_screen()
-        draw_map(player)
+        draw_map(**player)
         valid_moves = get_moves(player)
-        print('You\'re currently in room {}'.format(player))
+        print('You\'re currently in room {}'.format(player['location']))
         print('You can move {}.'.format(', '.join(valid_moves)))
         print('Enter QUIT to quit')
+        print(player['location'])
 
         move = input('> ')
         move = move.upper()
@@ -101,7 +107,8 @@ def game_loop():
 
         # Good move? Change player position
         if move in valid_moves:
-            player = move_player(player, move)
+            player['moves'].append(player['location'])
+            player['location'] = move_player(player, move)
 
             # On the monster? They lose!
             if player == monster:
