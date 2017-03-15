@@ -84,19 +84,24 @@ def draw_map(location, moves):
                 output = tile.format('_|')
         print(output, end=line_end)
 
-def game_loop():
+def game_loop(debug):
     player = {'location': None, 'moves': []}
     monster, door, player['location'] = get_locations()
     playing = True
+    debug = debug
 
     while playing:
         clear_screen()
         draw_map(**player)
         valid_moves = get_moves(player)
+
+        if debug == True:
+            print('** DEBUG MODE **')
+            print('MONSTER: ', monster, 'DOOR: ', door, 'PLAYER: ', player['location'])
+
         print('You\'re currently in room {}'.format(player['location']))
         print('You can move {}.'.format(', '.join(valid_moves)))
         print('Enter QUIT to quit')
-        print(player['location'])
 
         move = input('> ')
         move = move.upper()
@@ -105,17 +110,27 @@ def game_loop():
             print('\n ** See you next time! **\n')
             break
 
+        if move == 'DEBUG':
+            if debug == True:
+                input('\n ** EXITING DEBUG MODE **\n')
+                debug = False
+                continue
+            else:
+                input('\n ** ENTERING DEBUG MODE **\n')
+                debug = True
+                continue
+
         # Good move? Change player position
         if move in valid_moves:
             player['moves'].append(player['location'])
             player['location'] = move_player(player, move)
 
             # On the monster? They lose!
-            if player == monster:
+            if player['location'] == monster:
                 print('\n ** Oh no! The monster got you! Better luck next time! **\n')
                 playing = False
 
-            if player == door:
+            if player['location'] == door:
                 print('\n ** You escaped! Congratulations! **\n')
                 playing = False
 
@@ -126,10 +141,10 @@ def game_loop():
         # Otherwise, loop back around
     else:
         if input('Play again? [Y/n] ').lower() != 'n':
-            game_loop()
+            game_loop(debug)
 
 clear_screen()
 print('Welcome to the dungeon')
 input('Press return to start!')
 clear_screen()
-game_loop()
+game_loop(False)
