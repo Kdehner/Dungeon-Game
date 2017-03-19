@@ -1,5 +1,7 @@
 import random
 import os
+from getch import _Getch
+
 
 # draw grid
 # pick random location for player
@@ -17,6 +19,8 @@ CELLS = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0),
          (0, 3), (1, 3), (2, 3), (3, 3), (4, 3),
          (0, 4), (1, 4), (2, 4), (3, 4), (4, 4)]
 
+getch = _Getch()
+
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -28,7 +32,7 @@ def move_player(player, move):
     # get the player's location
     x, y = player['location']
     # if move == LEFT, x-1
-    if move == 'LEFT':
+    if move == 'LEFT' or getch == '\027[A':
         x -= 1
     # if move == RIGHT, x+1
     if move == 'RIGHT':
@@ -114,6 +118,7 @@ def game_loop(debug):
 
         move = input('> ')
         move = move.upper()
+        print(getch)
 
         if move == 'QUIT':
             print('\n ** See you next time! **\n')
@@ -151,6 +156,7 @@ def game_loop(debug):
     else:
         if input('Play again? [Y/n] ').lower() != 'n':
             game_loop(debug)
+
 
 clear_screen()
 print('Welcome to the dungeon')
